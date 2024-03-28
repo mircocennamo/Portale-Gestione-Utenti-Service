@@ -1,0 +1,46 @@
+<configuration>
+    <property name="LOGS" value="./logs" />
+
+    <appender name="RollingFileBatch"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/portale/gestioneutenti/portale-gestione-utenti-service.log</file>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>${LOGS}/portale/gestioneutenti/archived/portale-gestione-utenti-service-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+
+
+
+
+
+    <appender name="asyncRollingFileBatch" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="RollingFileBatch"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>256</queueSize>
+        <neverBlock>false</neverBlock>
+        <includeCallerData>false</includeCallerData>
+    </appender>
+
+    <logger name="it.interno.gestioneuffici" level="debug" additivity="false">
+        <appender-ref ref="asyncRollingFileBatch" />
+    </logger>
+
+
+    <root level="INFO">
+       <appender-ref ref="asyncRollingFileBatch" />
+    </root>
+
+</configuration>
