@@ -34,7 +34,7 @@
         <includeCallerData>false</includeCallerData>
     </appender>
 
-    <logger name="it.interno.gestioneuffici" level="debug" additivity="false">
+    <logger name="it.interno.gestioneutentiservice" level="debug" additivity="false">
         <appender-ref ref="asyncRollingFileBatch" />
     </logger>
 
