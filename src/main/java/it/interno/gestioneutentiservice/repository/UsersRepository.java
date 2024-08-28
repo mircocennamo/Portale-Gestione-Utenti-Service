@@ -172,7 +172,7 @@ public interface UsersRepository extends JpaRepository<Users, String> {
 
 
     @Query(value = "SELECT ufficio.COD_UFF " +
-            "FROM SSD_SECURITY.SEC_COMANDANTE_UFFICI com_uff " +
+            "FROM SSD_SECURITY.SEC_COMANDANTE_UFFICI com_uff , " +
             "SSD_SECURITY.SEC_UFFICIO_LEVEL ufficio " +
             " WHERE com_uff.UFF_SEGN = ufficio.COD_UFF " +
             "AND com_uff.UTE_CMD = ?1 AND com_uff.DATA_CAN IS NULL and ufficio.DATA_CAN IS NULL ", nativeQuery = true)
