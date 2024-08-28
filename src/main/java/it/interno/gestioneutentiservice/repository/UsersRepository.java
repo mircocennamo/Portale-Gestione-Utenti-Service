@@ -168,4 +168,22 @@ public interface UsersRepository extends JpaRepository<Users, String> {
             "AND u.G_MEMBER = ?1 " +
             "AND u.DATA_CAN IS NULL", nativeQuery = true)
     Users getUtenteSenzaUfficio(String codiceUtente);
+
+
+
+    @Query(value = "SELECT ufficio.COD_UFF " +
+            "FROM SSD_SECURITY.SEC_COMANDANTE_UFFICI com_uff " +
+            "SSD_SECURITY.SEC_UFFICIO_LEVEL ufficio " +
+            " WHERE com_uff.UFF_SEGN = ufficio.COD_UFF " +
+            "AND com_uff.UTE_CMD = ?1 AND com_uff.DATA_CAN IS NULL and ufficio.DATA_CAN IS NULL ", nativeQuery = true)
+    List<String> getUfficiComandatiDaUtente(String codiceUtente);
+
+    @Query(value = "select count(*) from " +
+            "SSD_SECURITY.USERS users ," +
+            "SSD_SECURITY.SEC_UFFICIO_LEVEL ufficio " +
+            "where users.G_UFFICIO=ufficio.COD_UFF and ufficio.COD_UFF=?1 " +
+            " and users.DATA_CAN IS NULL" +
+            " and ufficio.DATA_CAN IS NULL " +
+            " and users.G_MEMBER NOT IN ?2", nativeQuery = true)
+    Integer countUserByUfficioEsclusoUtente(String codiceUfficio,String codiceUtente);
 }

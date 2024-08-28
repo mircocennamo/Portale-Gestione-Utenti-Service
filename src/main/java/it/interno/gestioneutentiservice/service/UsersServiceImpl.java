@@ -140,8 +140,7 @@ public class UsersServiceImpl implements UsersService{
         Users utenteDB = usersRepository.getUtenteByCodiceUtente(input.getCodiceUtente());
 
         //eliminazione condizione come richiesto da documentazione
-        //La condizione sulla classe UsersServiceImpl, alla riga 142, va eliminata.
-        //        -) Vanno impostate a NULL anche le colonne "paese", "via", "indirizzo postale" della OIM USERS
+
 
         //if(utente.getCodiceUfficio() == null)
         //    utente.setCodiceUfficio(utenteDB.getCodiceUfficio());
@@ -269,6 +268,9 @@ public class UsersServiceImpl implements UsersService{
     @Transactional
     public UsersDto deleteUser(String codiceUtente, String utenteCancellazione, String ufficioCancellazione){
 
+        if(!checkDeleteUser(codiceUtente)){
+            throw new RuntimeException("Non è possibile cancellare l'utente, poichè è comandante di uno o più uffici associati ad altri utenti.");
+        }
         Users utente = usersRepository.getUtenteByCodiceUtente(codiceUtente);
         utente.setDataCancellazione(GenericUtils.getCurrentTimestamp());
         utente.setUtenteCancellazione(utenteCancellazione);
@@ -278,6 +280,18 @@ public class UsersServiceImpl implements UsersService{
         oimClient.deleteUtente(codiceUtente);
 
         return usersMapper.toDto(utente, usersRepository);
+    }
+
+
+    private Boolean checkDeleteUser(String codiceUtente){
+       List<String> codiciUfficiComandati =  usersRepository.getUfficiComandatiDaUtente(codiceUtente);
+         return codiciUfficiComandati.stream().allMatch(el -> checkOnlyComandantePresenteInUfficio(el,codiceUtente));
+    }
+
+
+
+    private Boolean checkOnlyComandantePresenteInUfficio(String codiceUfficio,String codiceUtente){
+        return usersRepository.countUserByUfficioEsclusoUtente(codiceUfficio,codiceUtente) == 0;
     }
 
     @Override
