@@ -6,6 +6,7 @@ import it.interno.gestioneutentiservice.dto.UfficioDto;
 import it.interno.gestioneutentiservice.dto.UsersDto;
 import it.interno.gestioneutentiservice.dto.oim.UtenteOimDto;
 import it.interno.gestioneutentiservice.entity.*;
+import it.interno.gestioneutentiservice.exception.CancellazioneComandanteException;
 import it.interno.gestioneutentiservice.mapper.OrarioLavoroMapper;
 import it.interno.gestioneutentiservice.mapper.UfficioMapper;
 import it.interno.gestioneutentiservice.mapper.UsersMapper;
@@ -269,7 +270,7 @@ public class UsersServiceImpl implements UsersService{
     public UsersDto deleteUser(String codiceUtente, String utenteCancellazione, String ufficioCancellazione){
 
         if(!checkDeleteUser(codiceUtente)){
-            throw new RuntimeException("Non è possibile cancellare l'utente, poichè è comandante di uno o più uffici associati ad altri utenti.");
+            throw new CancellazioneComandanteException("Non è possibile cancellare l'utente, poiché è comandante di uno o più uffici associati ad altri utenti.");
         }
         Users utente = usersRepository.getUtenteByCodiceUtente(codiceUtente);
         utente.setDataCancellazione(GenericUtils.getCurrentTimestamp());
