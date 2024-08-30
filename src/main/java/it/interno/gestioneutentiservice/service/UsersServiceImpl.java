@@ -191,34 +191,56 @@ public class UsersServiceImpl implements UsersService{
         Ufficio ufficio = ufficioRepository.findById(orarioLavoro == null ? " " : orarioLavoro.getCodiceUfficio()).orElse(null);
         //check chiusura ufficio
 
+
+        ForzaPolizia fp = forzaPoliziaRepository.findById(utente.getForzaPolizia().getIdGruppo()).orElse(null);
         // fix come richiesto da documentazione
         // Ufficio rimosso
         if(orarioLavoro == null && suDB != null){
-            ufficio = null;
-            qualifica.setCategoria(null);
+            oimClient.modificaUtente(new UtenteOimDto(
+                    utente.getCodiceUtente(),
+                    utente.getCognome(),
+                    utente.getNome(),
+                    utente.getEmailPrimaria() == 0 ? utente.getEmail() : utente.getEmailPrivata(),
+                    null,  //codice ufficio address oim
+                    null, // descrizione ufficio address oim
+                    utente.getTelefono(),
+                    qualifica == null ? null : GenericUtils.getDescrizioneQualifica(qualifica, utente.getForzaPolizia().getIdGruppo()), // descrizione qualifica
+                    null, // categoria address oim
+                    fp == null ? null : fp.getNome(), // descrizione ente
+                    utente.getDataNascita(),
+                    utente.getCodiceLuogoNascita().getDescrizioneLuogo(),
+                    utente.getSesso().toString(),
+                    utente.getCodiceFiscale(),
+                    utente.getEmailPrimaria() == 0 ? utente.getEmailPrivata() : utente.getEmail()
+
+                    //new UtenteAggiornamento.Address("work", input.getDescrizioneUfficio(), input.getCategoria(), input.getCodiceUfficio()));
+            ));
+        }
+        else{
+            oimClient.modificaUtente(new UtenteOimDto(
+                    utente.getCodiceUtente(),
+                    utente.getCognome(),
+                    utente.getNome(),
+                    utente.getEmailPrimaria() == 0 ? utente.getEmail() : utente.getEmailPrivata(),
+                    ufficio == null ? null : ufficio.getCodiceUfficio(),  //codice ufficio address oim
+                    ufficio == null ? null : ufficio.getDescrizioneUfficio(), // descrizione ufficio address oim
+                    utente.getTelefono(),
+                    qualifica == null ? null : GenericUtils.getDescrizioneQualifica(qualifica, utente.getForzaPolizia().getIdGruppo()), // descrizione qualifica
+                    qualifica == null ? null : qualifica.getCategoria(), // categoria address oim
+                    fp == null ? null : fp.getNome(), // descrizione ente
+                    utente.getDataNascita(),
+                    utente.getCodiceLuogoNascita().getDescrizioneLuogo(),
+                    utente.getSesso().toString(),
+                    utente.getCodiceFiscale(),
+                    utente.getEmailPrimaria() == 0 ? utente.getEmailPrivata() : utente.getEmail()
+
+                    //new UtenteAggiornamento.Address("work", input.getDescrizioneUfficio(), input.getCategoria(), input.getCodiceUfficio()));
+            ));
         }
 
 
-        ForzaPolizia fp = forzaPoliziaRepository.findById(utente.getForzaPolizia().getIdGruppo()).orElse(null);
-        oimClient.modificaUtente(new UtenteOimDto(
-                utente.getCodiceUtente(),
-                utente.getCognome(),
-                utente.getNome(),
-                utente.getEmailPrimaria() == 0 ? utente.getEmail() : utente.getEmailPrivata(),
-                ufficio == null ? null : ufficio.getCodiceUfficio(),  //codice ufficio address oim
-                ufficio == null ? null : ufficio.getDescrizioneUfficio(), // descrizione ufficio address oim
-                utente.getTelefono(),
-                qualifica == null ? null : GenericUtils.getDescrizioneQualifica(qualifica, utente.getForzaPolizia().getIdGruppo()), // descrizione qualifica
-                qualifica == null ? null : qualifica.getCategoria(), // categoria address oim
-                fp == null ? null : fp.getNome(), // descrizione ente
-                utente.getDataNascita(),
-                utente.getCodiceLuogoNascita().getDescrizioneLuogo(),
-                utente.getSesso().toString(),
-                utente.getCodiceFiscale(),
-                utente.getEmailPrimaria() == 0 ? utente.getEmailPrivata() : utente.getEmail()
 
-                //new UtenteAggiornamento.Address("work", input.getDescrizioneUfficio(), input.getCategoria(), input.getCodiceUfficio()));
-        ));
+
 
         checkCambioEmail(utenteDB, utente, utenteAggiornamento);
 
